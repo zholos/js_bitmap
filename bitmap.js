@@ -102,11 +102,17 @@ Bitmap.prototype.dataURL = function() {
     }
 
     function deflate(data) {
-        var len = data.length;
-        return "\x78\x01\x01" +
-            String.fromCharCode(len & 255, len>>>8,
-                                ~len & 255, (~len>>>8) & 255) +
-            data + hton(adler(data));
+        var compressed = "\x78\x01";
+        var i = 0;
+        do {
+            var block = data.slice(i, i + 65535);
+            var len = block.length;
+            compressed += String.fromCharCode(
+                ((i += block.length) == data.length) << 0,
+                len & 255, len>>>8, ~len & 255, (~len>>>8) & 255);
+            compressed += block;
+        } while (i < data.length);
+        return compressed + hton(adler(data));
     }
 
     function crc32(data) {

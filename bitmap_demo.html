@@ -27,7 +27,7 @@
 <script type="text/javascript" src="bitmap.js"></script>
 <script type="text/javascript"><!--
 
-function star_bmp(zoom, rounded, shift) {
+function star_bmp() {
     var zoom = ~~(Math.random() * 5 + 1),
         rounded = Math.random() * 3,
         shift = Math.random() - .5;
@@ -39,9 +39,9 @@ function star_bmp(zoom, rounded, shift) {
 
     var bmp = new Bitmap(size * 4, size * 4);
     for (var i = 0; i < bmp.width; i++) {
-        var x = (i / bmp.width - .5) * 2;
+        var x = (i / (bmp.width - 1) - .5) * 2;
         for (var j = 0; j < bmp.height; j++) {
-            var y = (j / bmp.height - .5) * 2;
+            var y = (j / (bmp.height - 1) - .5) * 2;
             var c = Math.max(0, 1 - Math.pow(Math.abs(x*y) * 5, 2)
                                   - (x*x + y*y) * rounded);
             bmp.pixel[i][j] = [r, g, b, c];
@@ -51,9 +51,21 @@ function star_bmp(zoom, rounded, shift) {
     return bmp;
 }
 
-function star_img() {
-    var bmp = star_bmp();
+function sun_bmp() {
+    var size = ~~(Math.random() * 50 + 200);
+    var bmp = new Bitmap(size, size);
+    for (var i = 0; i < bmp.width; i++) {
+        var x = (i / (bmp.width - 1) - .5) * 2;
+        for (var j = 0; j < bmp.height; j++) {
+            var y = (j / (bmp.height - 1) - .5) * 2;
+            var c = Math.max(0, Math.min(1, .05/Math.pow(x*x + y*y, 5)));
+            bmp.pixel[i][j] = [1, 1, .5, c];
+        }
+    }
+    return bmp;
+}
 
+function img(bmp, left, top) {
     var div = document.getElementById("stars")
 
     var img = document.createElement("img");
@@ -62,17 +74,18 @@ function star_img() {
     img.style.position = "absolute";
     img.style.marginLeft = -~~(bmp.width / 2 - .5) + "px";
     img.style.marginTop = -~~(bmp.height / 2 - .5) + "px";
-    img.style.left = Math.random() * 100 + "%";
-    img.style.top = Math.random() * 100 + "%";
+    img.style.left = left;
+    img.style.top = top;
 
     div.appendChild(img);
 }
 
 function stars(n) {
     if (n) {
-        star_img();
+        img(star_bmp(), Math.random() * 100 + "%", Math.random() * 100 + "%");
         setTimeout(function() { stars(n-1) }, 1);
-    }
+    } else
+        img(sun_bmp(), "50%", "50%");
 }
 
 --></script>
