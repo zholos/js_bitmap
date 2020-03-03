@@ -103,7 +103,7 @@ Bitmap.prototype.dataURL = function() {
 
     function deflate(data) {
         var len = data.length;
-        return "\170\1\1" +
+        return "\x78\x01\x01" +
             String.fromCharCode(len & 255, len>>>8,
                                 ~len & 255, (~len>>>8) & 255) +
             data + hton(adler(data));
@@ -122,7 +122,7 @@ Bitmap.prototype.dataURL = function() {
     }
 
     function base64(data) {
-        enc = "";
+        var enc = "";
         for (var i = 5, n = data.length * 8 + 5; i < n; i += 6)
             enc +=
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[
@@ -132,8 +132,8 @@ Bitmap.prototype.dataURL = function() {
         return enc;
     }
 
-    var png = "\211PNG\r\n\32\n" +
-        chunk("IHDR", hton(this.width) + hton(this.height) + "\10\6\0\0\0") +
+    var png = "\x89PNG\r\n\x1a\n" +
+        chunk("IHDR", hton(this.width) + hton(this.height) + "\x08\x06\0\0\0") +
         chunk("IDAT", deflate(rows(this.pixel, this.width, this.height))) +
         chunk("IEND", "");
 
